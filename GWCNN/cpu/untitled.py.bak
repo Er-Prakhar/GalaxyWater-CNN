@@ -1,0 +1,4 @@
+from networks import HelloWorld
+
+HelloWorld.hello()
+print(__file__)

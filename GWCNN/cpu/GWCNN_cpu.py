@@ -433,7 +433,10 @@ def training(nets,names ,n_grid=32, build_r=32., build_prefixs = [],dbloss=False
         os.chdir(curr_dir) #new
         if not os.access(name,0):
             os.mkdir(name)
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        # Prakhar
+        device = "cpu"
+        #
         net.to(device)
         if torch.cuda.device_count() >1:
             net = nn.DataParallel(net)
@@ -532,6 +535,29 @@ def predict_path_cpu(nets,names,in_path,out_name,n_grid=64, padding=4.0, build_p
                      'use_paths':True, 'paths_dict':pd}
         build_full_epoch(env, 1000, train=False, prefix=build_prefixs[idx],tlog=tlog,tlog_path=tlog_path)
 
+# if __name__ == '__main__':
+#     #idxs - For training (requires GPU)
+    
+#     #idxs is list of idx, where idx is the file name of PDB, used like below
+#     #   paths = {'pro':['./pdb/pdb_protein/%s.pdb'%(idx)],
+#     #           'wat':['./pdb/pdb_water/%s.pdb'%(idx)]}
+#     # pdb_protein contains protein only PDB files.
+#     # pdb_water   contains water only PDB files - for training
+    
+#     trainidxs  = []
+#     testidxs   = []
+    
+#     if len(sys.argv) != 3:
+#         print('usage: GWCNN_cpu.py [input PDB/mmCIF] [output name]')
+        
+#     else:    
+#         pro_path = sys.argv[1]
+#         out_name = sys.argv[2]
+#         tlog_path ='cpu_time.log'
+#         nets  = [networks.Net_v4_5_auxloss()]
+#         names = ['networks'] 
+#         predict_path_cpu(nets,names,pro_path,out_name,n_grid=64, padding=4.0, build_prefixs=names,dbloss=True,tlog = False)
+
 if __name__ == '__main__':
     #idxs - For training (requires GPU)
     
@@ -541,16 +567,12 @@ if __name__ == '__main__':
     # pdb_protein contains protein only PDB files.
     # pdb_water   contains water only PDB files - for training
     
-    trainidxs  = []
-    testidxs   = []
+    trainidxs = ['1bhe','1bkr','1chd','1dus','1dzf','1es5','1ew4','1f32','1fcq','1gqe','1iib','1jhs','1jyh','1k4n','1lfp','1m1s','1mix','1mk4','1msc','1n7k','1nar','1psw','1qw2','1ri6','1sgm','1sh8','1t6t','1tp6','1tua','1tvx','1uek','1v6z','1v77','1vin','1wer','1wwi','1x2i','1xaw','1xfs','1xkr','1y9w','1ylx','1yn3','1ypy','1zvb','2axo','2c2i','2cwq','2cxd','2d59','2d5d','2dyi','2e8g','2ebe','2erf','2f23','2fhz','2fq3','2gau','2gs5','2gxg','2hxi','2hy5','2ig8','2nnu','2nr7','2pv2','2qgm','2rbb','2vga','2x4j','2yvt','2yxm','2zq5','2zvy','3aq2','3bcy','3bpv','3bqx','3bs7','3c5v','3d79','3dgp','3enu','3fb9','3fcd','3ffv','3g1j','3g8k','3ggy','3grh','3h2g','3h6r','3ho7','3hvw','3k8u','3m5b','3nph','3q1c','3q64','3qf2','3rvc','3vzh','3wvt','3zbd','4djg','4evf','4g29','4gf3','4gvb','4ikn','4j4r','4jkz','4jqf','4kia','4mis','4pbo','4pqd','4rth','4xe7','4ywz','4zpc','5b0u','5b6c','5c5z','5dae','5fce','5h28','5i5n','5i8j','5itm','5j4f','5jge','5l37','5lnd','5u96','5vtl','5wd8','5xbc','5y6h','5yqi','5z6d','6a5c','6a5h','6ba9','6cca','6cva','6e4o','6e7e','6fm5','6i50','6jny','6k1w','6p28','6pym','6rzy']
+
+    testidxs = ['1a62','1a8q','1arb','1atz','1b8p','1cq3','1dvo','1eg3','1es9','1f00','1f46','1g61','1gak','1h99','1hzt','1i60','1j7g','1jb3','1jl1','1jy2','1jyk','1kve','1kxo','1n1j','1ng6','1o8x','1o9g','1ow1','1q5z','1s4k','1sdo','1se8','1u7b','1ufi','1usg','1v6t','1vaj','1weh','1whi','1wna','1y12','1yac','1ylm','1z4e','2bjq','2cvb','2cxh','2d4p','2db7','2dp9','2dtc','2dyj','2e12','2ej8','2end','2f5g','2f6e','2fl4','2fzp','2hpl','2hrz','2iu1','2odl','2ooa','2p4h','2p58','2pge','2pof','2qjz','2qk1','2r2c','2rb8','2x4l','2xhf','2xpp','2yv4','2yva','2yvs','2yyv','2z14','2zca','2zcm','3a4c','3c90','3cnu','3d1b','3dfg','3dz1','3e0h','3efy','3eoi','3etv','3fau','3fke','3hqx','3hut','3hxl','3ils','3kgk','3kp8','3kvd','3l3f','3lw3','3m66','3m8j','3nj2','3nrw','3obq','3p9v','3pid','3rv1','3s8m','3u4v','3vhj','3vz9','4b9g','4cbe','4d53','4dzo','4g9q','4giw','4gs3','4ic4','4j0w','4me2','4rs7','4uds','4xy5','4z2n','4zbh','5dtc','5e71','5fid','5hyz','5mc7','5njo','5u2l','5x9k','5xaq','5ygh','5zt3','6aht','6ar0','6bus','6bw9','6d0a','6dnm','6h8f','6ivc','6j56','6k93','6l1m']
     
-    if len(sys.argv) != 3:
-        print('usage: GWCNN_cpu.py [input PDB/mmCIF] [output name]')
-        
-    else:    
-        pro_path = sys.argv[1]
-        out_name = sys.argv[2]
-        tlog_path ='cpu_time.log'
-        nets  = [networks.Net_v4_5_auxloss()]
-        names = ['networks'] 
-        predict_path_cpu(nets,names,pro_path,out_name,n_grid=64, padding=4.0, build_prefixs=names,dbloss=True,tlog = False)
+    nets = [networks.Net_v4_5_auxloss()]
+    
+    # nets  = []
+    names = ['networks1']
+    training(nets,names, dbloss=True)
